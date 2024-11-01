@@ -19,11 +19,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceType">The <see cref="Type"/> of the service.</param>
         /// <param name="implementationType">The <see cref="Type"/> implementing the service.</param>
         /// <param name="lifetime">The <see cref="ServiceLifetime"/> of the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
-            ServiceLifetime lifetime)
-            : this(serviceType, null, implementationType, lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose = false)
+            : this(serviceType, null, implementationType, lifetime, doNotDispose)
         {
         }
 
@@ -34,12 +38,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceKey">The <see cref="ServiceDescriptor.ServiceKey"/> of the service.</param>
         /// <param name="implementationType">The <see cref="Type"/> implementing the service.</param>
         /// <param name="lifetime">The <see cref="ServiceLifetime"/> of the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
             object? serviceKey,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
-            ServiceLifetime lifetime)
-            : this(serviceType, serviceKey, lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose = false)
+            : this(serviceType, serviceKey, lifetime, doNotDispose)
         {
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationType);
@@ -53,10 +61,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="serviceType">The <see cref="Type"/> of the service.</param>
         /// <param name="instance">The instance implementing the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
-            object instance)
-            : this(serviceType, null, instance)
+            object instance,
+            bool doNotDispose = false)
+            : this(serviceType, null, instance, doNotDispose)
         {
         }
 
@@ -67,11 +79,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceType">The <see cref="Type"/> of the service.</param>
         /// <param name="serviceKey">The <see cref="ServiceDescriptor.ServiceKey"/> of the service.</param>
         /// <param name="instance">The instance implementing the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
             object? serviceKey,
-            object instance)
-            : this(serviceType, serviceKey, ServiceLifetime.Singleton)
+            object instance,
+            bool doNotDispose = false)
+            : this(serviceType, serviceKey, ServiceLifetime.Singleton, doNotDispose)
         {
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(instance);
@@ -85,11 +101,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceType">The <see cref="Type"/> of the service.</param>
         /// <param name="factory">A factory used for creating service instances.</param>
         /// <param name="lifetime">The <see cref="ServiceLifetime"/> of the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
             Func<IServiceProvider, object> factory,
-            ServiceLifetime lifetime)
-            : this(serviceType, serviceKey: null, lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose = false)
+            : this(serviceType, serviceKey: null, lifetime, doNotDispose)
         {
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(factory);
@@ -104,12 +124,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="serviceKey">The <see cref="ServiceDescriptor.ServiceKey"/> of the service.</param>
         /// <param name="factory">A factory used for creating service instances.</param>
         /// <param name="lifetime">The <see cref="ServiceLifetime"/> of the service.</param>
+        /// <param name="doNotDispose">
+        /// The value indicating whether disposal of instances resolved by the Service Provider need to be disposed.
+        /// </param>
         public ServiceDescriptor(
             Type serviceType,
             object? serviceKey,
             Func<IServiceProvider, object?, object> factory,
-            ServiceLifetime lifetime)
-            : this(serviceType, serviceKey, lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose = false)
+            : this(serviceType, serviceKey, lifetime, doNotDispose)
         {
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(factory);
@@ -126,11 +150,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        private ServiceDescriptor(Type serviceType, object? serviceKey, ServiceLifetime lifetime)
+        private ServiceDescriptor(Type serviceType, object? serviceKey, ServiceLifetime lifetime, bool doNotDispose)
         {
             Lifetime = lifetime;
             ServiceType = serviceType;
             ServiceKey = serviceKey;
+            DoNotDispose = doNotDispose;
         }
 
         /// <summary>
@@ -245,6 +270,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Indicates whether the service is a keyed service.
         /// </summary>
         public bool IsKeyedService => ServiceKey != null;
+
+        /// <summary>
+        /// Gets the value indicating whether the Service Provider should not handle disposal for the service.
+        /// </summary>
+        public bool DoNotDispose { get; }
 
         /// <inheritdoc />
         public override string ToString()

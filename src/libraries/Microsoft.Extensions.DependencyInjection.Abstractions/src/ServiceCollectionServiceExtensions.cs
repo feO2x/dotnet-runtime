@@ -19,18 +19,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationType">The implementation type of the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
         public static IServiceCollection AddTransient(
             this IServiceCollection services,
             Type serviceType,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationType);
 
-            return Add(services, serviceType, implementationType, ServiceLifetime.Transient);
+            return Add(services, serviceType, implementationType, ServiceLifetime.Transient, doNotDispose);
         }
 
         /// <summary>
@@ -41,18 +43,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
         public static IServiceCollection AddTransient(
             this IServiceCollection services,
             Type serviceType,
-            Func<IServiceProvider, object> implementationFactory)
+            Func<IServiceProvider, object> implementationFactory,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return Add(services, serviceType, implementationFactory, ServiceLifetime.Transient);
+            return Add(services, serviceType, implementationFactory, ServiceLifetime.Transient, doNotDispose);
         }
 
         /// <summary>
@@ -63,15 +67,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
-        public static IServiceCollection AddTransient<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
+        public static IServiceCollection AddTransient<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services, bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
             ThrowHelper.ThrowIfNull(services);
 
-            return services.AddTransient(typeof(TService), typeof(TImplementation));
+            return services.AddTransient(typeof(TService), typeof(TImplementation), doNotDispose);
         }
 
         /// <summary>
@@ -80,16 +85,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register and the implementation to use.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
         public static IServiceCollection AddTransient(
             this IServiceCollection services,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
 
-            return services.AddTransient(serviceType, serviceType);
+            return services.AddTransient(serviceType, serviceType, doNotDispose);
         }
 
         /// <summary>
@@ -116,17 +123,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
         public static IServiceCollection AddTransient<TService>(
             this IServiceCollection services,
-            Func<IServiceProvider, TService> implementationFactory)
+            Func<IServiceProvider, TService> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddTransient(typeof(TService), implementationFactory);
+            return services.AddTransient(typeof(TService), implementationFactory, doNotDispose);
         }
 
         /// <summary>
@@ -139,18 +148,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Transient"/>
         public static IServiceCollection AddTransient<TService, TImplementation>(
             this IServiceCollection services,
-            Func<IServiceProvider, TImplementation> implementationFactory)
+            Func<IServiceProvider, TImplementation> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddTransient(typeof(TService), implementationFactory);
+            return services.AddTransient(typeof(TService), implementationFactory, doNotDispose);
         }
 
         /// <summary>
@@ -161,18 +172,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationType">The implementation type of the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
         public static IServiceCollection AddScoped(
             this IServiceCollection services,
             Type serviceType,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationType);
 
-            return Add(services, serviceType, implementationType, ServiceLifetime.Scoped);
+            return Add(services, serviceType, implementationType, ServiceLifetime.Scoped, doNotDispose);
         }
 
         /// <summary>
@@ -183,18 +196,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
         public static IServiceCollection AddScoped(
             this IServiceCollection services,
             Type serviceType,
-            Func<IServiceProvider, object> implementationFactory)
+            Func<IServiceProvider, object> implementationFactory,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return Add(services, serviceType, implementationFactory, ServiceLifetime.Scoped);
+            return Add(services, serviceType, implementationFactory, ServiceLifetime.Scoped, doNotDispose);
         }
 
         /// <summary>
@@ -205,9 +220,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
-        public static IServiceCollection AddScoped<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
+        public static IServiceCollection AddScoped<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services, bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
@@ -222,16 +238,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register and the implementation to use.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
         public static IServiceCollection AddScoped(
             this IServiceCollection services,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
 
-            return services.AddScoped(serviceType, serviceType);
+            return services.AddScoped(serviceType, serviceType, doNotDispose);
         }
 
         /// <summary>
@@ -240,14 +258,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
-        public static IServiceCollection AddScoped<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TService>(this IServiceCollection services)
+        public static IServiceCollection AddScoped<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TService>(this IServiceCollection services, bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
 
-            return services.AddScoped(typeof(TService));
+            return services.AddScoped(typeof(TService), doNotDispose);
         }
 
         /// <summary>
@@ -258,17 +277,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
         public static IServiceCollection AddScoped<TService>(
             this IServiceCollection services,
-            Func<IServiceProvider, TService> implementationFactory)
+            Func<IServiceProvider, TService> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddScoped(typeof(TService), implementationFactory);
+            return services.AddScoped(typeof(TService), implementationFactory, doNotDispose);
         }
 
         /// <summary>
@@ -281,18 +302,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Scoped"/>
         public static IServiceCollection AddScoped<TService, TImplementation>(
             this IServiceCollection services,
-            Func<IServiceProvider, TImplementation> implementationFactory)
+            Func<IServiceProvider, TImplementation> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddScoped(typeof(TService), implementationFactory);
+            return services.AddScoped(typeof(TService), implementationFactory, doNotDispose);
         }
 
 
@@ -304,18 +327,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationType">The implementation type of the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton(
             this IServiceCollection services,
             Type serviceType,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationType);
 
-            return Add(services, serviceType, implementationType, ServiceLifetime.Singleton);
+            return Add(services, serviceType, implementationType, ServiceLifetime.Singleton, doNotDispose);
         }
 
         /// <summary>
@@ -326,18 +351,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton(
             this IServiceCollection services,
             Type serviceType,
-            Func<IServiceProvider, object> implementationFactory)
+            Func<IServiceProvider, object> implementationFactory,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return Add(services, serviceType, implementationFactory, ServiceLifetime.Singleton);
+            return Add(services, serviceType, implementationFactory, ServiceLifetime.Singleton, doNotDispose);
         }
 
         /// <summary>
@@ -348,15 +375,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public static IServiceCollection AddSingleton<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
+        public static IServiceCollection AddSingleton<TService, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services, bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
             ThrowHelper.ThrowIfNull(services);
 
-            return services.AddSingleton(typeof(TService), typeof(TImplementation));
+            return services.AddSingleton(typeof(TService), typeof(TImplementation), doNotDispose);
         }
 
         /// <summary>
@@ -365,16 +393,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register and the implementation to use.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton(
             this IServiceCollection services,
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType)
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type serviceType,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
 
-            return services.AddSingleton(serviceType, serviceType);
+            return services.AddSingleton(serviceType, serviceType, doNotDispose);
         }
 
         /// <summary>
@@ -383,14 +413,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
-        public static IServiceCollection AddSingleton<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TService>(this IServiceCollection services)
+        public static IServiceCollection AddSingleton<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TService>(this IServiceCollection services, bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
 
-            return services.AddSingleton(typeof(TService));
+            return services.AddSingleton(typeof(TService), doNotDispose);
         }
 
         /// <summary>
@@ -401,17 +432,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TService">The type of the service to add.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton<TService>(
             this IServiceCollection services,
-            Func<IServiceProvider, TService> implementationFactory)
+            Func<IServiceProvider, TService> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddSingleton(typeof(TService), implementationFactory);
+            return services.AddSingleton(typeof(TService), implementationFactory, doNotDispose);
         }
 
         /// <summary>
@@ -424,18 +457,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TImplementation">The type of the implementation to use.</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationFactory">The factory that creates the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton<TService, TImplementation>(
             this IServiceCollection services,
-            Func<IServiceProvider, TImplementation> implementationFactory)
+            Func<IServiceProvider, TImplementation> implementationFactory,
+            bool doNotDispose = false)
             where TService : class
             where TImplementation : class, TService
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationFactory);
 
-            return services.AddSingleton(typeof(TService), implementationFactory);
+            return services.AddSingleton(typeof(TService), implementationFactory, doNotDispose);
         }
 
         /// <summary>
@@ -446,18 +481,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="serviceType">The type of the service to register.</param>
         /// <param name="implementationInstance">The instance of the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton(
             this IServiceCollection services,
             Type serviceType,
-            object implementationInstance)
+            object implementationInstance,
+            bool doNotDispose = false)
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(serviceType);
             ThrowHelper.ThrowIfNull(implementationInstance);
 
-            var serviceDescriptor = new ServiceDescriptor(serviceType, implementationInstance);
+            var serviceDescriptor = new ServiceDescriptor(serviceType, implementationInstance, doNotDispose);
             services.Add(serviceDescriptor);
             return services;
         }
@@ -469,26 +506,29 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="implementationInstance">The instance of the service.</param>
+        /// <param name="doNotDispose">The value indicating whether the disposal should not be handled by the service provider.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
         /// <seealso cref="ServiceLifetime.Singleton"/>
         public static IServiceCollection AddSingleton<TService>(
             this IServiceCollection services,
-            TService implementationInstance)
+            TService implementationInstance,
+            bool doNotDispose = false)
             where TService : class
         {
             ThrowHelper.ThrowIfNull(services);
             ThrowHelper.ThrowIfNull(implementationInstance);
 
-            return services.AddSingleton(typeof(TService), implementationInstance);
+            return services.AddSingleton(typeof(TService), implementationInstance, doNotDispose);
         }
 
         private static IServiceCollection Add(
             IServiceCollection collection,
             Type serviceType,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
-            ServiceLifetime lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose)
         {
-            var descriptor = new ServiceDescriptor(serviceType, implementationType, lifetime);
+            var descriptor = new ServiceDescriptor(serviceType, implementationType, lifetime, doNotDispose);
             collection.Add(descriptor);
             return collection;
         }
@@ -497,9 +537,10 @@ namespace Microsoft.Extensions.DependencyInjection
             IServiceCollection collection,
             Type serviceType,
             Func<IServiceProvider, object> implementationFactory,
-            ServiceLifetime lifetime)
+            ServiceLifetime lifetime,
+            bool doNotDispose)
         {
-            var descriptor = new ServiceDescriptor(serviceType, implementationFactory, lifetime);
+            var descriptor = new ServiceDescriptor(serviceType, implementationFactory, lifetime, doNotDispose);
             collection.Add(descriptor);
             return collection;
         }

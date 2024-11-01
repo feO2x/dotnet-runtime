@@ -10,9 +10,10 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
     /// </summary>
     internal abstract class ServiceCallSite
     {
-        protected ServiceCallSite(ResultCache cache)
+        protected ServiceCallSite(ResultCache cache, bool doNotDispose)
         {
             Cache = cache;
+            DoNotDispose = doNotDispose;
         }
 
         public abstract Type ServiceType { get; }
@@ -21,10 +22,12 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
         public ResultCache Cache { get; }
         public object? Value { get; set; }
         public object? Key { get; set; }
+        public bool DoNotDispose { get; }
 
         public bool CaptureDisposable =>
+            !DoNotDispose && (
             ImplementationType == null ||
             typeof(IDisposable).IsAssignableFrom(ImplementationType) ||
-            typeof(IAsyncDisposable).IsAssignableFrom(ImplementationType);
+            typeof(IAsyncDisposable).IsAssignableFrom(ImplementationType));
     }
 }

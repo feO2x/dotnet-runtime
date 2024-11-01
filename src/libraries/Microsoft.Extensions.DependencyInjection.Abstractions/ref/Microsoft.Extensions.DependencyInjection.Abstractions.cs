@@ -149,6 +149,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public ServiceDescriptor(System.Type serviceType, object? serviceKey, object instance) { }
         public ServiceDescriptor(System.Type serviceType, object? serviceKey, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)] System.Type implementationType, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) { }
         public ServiceDescriptor(System.Type serviceType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)] System.Type implementationType, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) { }
+        public bool DoNotDispose { get { throw null; } }
         public System.Func<System.IServiceProvider, object>? ImplementationFactory { get { throw null; } }
         public object? ImplementationInstance { get { throw null; } }
         [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicConstructors)]

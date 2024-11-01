@@ -381,19 +381,19 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                 var lifetime = new ResultCache(descriptor.Lifetime, serviceIdentifier, slot);
                 if (descriptor.HasImplementationInstance())
                 {
-                    callSite = new ConstantCallSite(descriptor.ServiceType, descriptor.GetImplementationInstance());
+                    callSite = new ConstantCallSite(descriptor.ServiceType, descriptor.GetImplementationInstance(), descriptor.DoNotDispose);
                 }
                 else if (!descriptor.IsKeyedService && descriptor.ImplementationFactory != null)
                 {
-                    callSite = new FactoryCallSite(lifetime, descriptor.ServiceType, descriptor.ImplementationFactory);
+                    callSite = new FactoryCallSite(lifetime, descriptor.ServiceType, descriptor.ImplementationFactory, descriptor.DoNotDispose);
                 }
                 else if (descriptor.IsKeyedService && descriptor.KeyedImplementationFactory != null)
                 {
-                    callSite = new FactoryCallSite(lifetime, descriptor.ServiceType, serviceIdentifier.ServiceKey!, descriptor.KeyedImplementationFactory);
+                    callSite = new FactoryCallSite(lifetime, descriptor.ServiceType, serviceIdentifier.ServiceKey!, descriptor.KeyedImplementationFactory, descriptor.DoNotDispose);
                 }
                 else if (descriptor.HasImplementationType())
                 {
-                    callSite = CreateConstructorCallSite(lifetime, serviceIdentifier, descriptor.GetImplementationType()!, callSiteChain);
+                    callSite = CreateConstructorCallSite(lifetime, serviceIdentifier, descriptor.GetImplementationType()!, callSiteChain, descriptor.DoNotDispose);
                 }
                 else
                 {
@@ -449,7 +449,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                     return null;
                 }
 
-                return _callSiteCache[callSiteKey] = CreateConstructorCallSite(lifetime, serviceIdentifier, closedType, callSiteChain);
+                return _callSiteCache[callSiteKey] = CreateConstructorCallSite(lifetime, serviceIdentifier, closedType, callSiteChain, descriptor.DoNotDispose);
             }
 
             return null;
@@ -459,7 +459,8 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
             ResultCache lifetime,
             ServiceIdentifier serviceIdentifier,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type implementationType,
-            CallSiteChain callSiteChain)
+            CallSiteChain callSiteChain,
+            bool doNotDispose)
         {
             try
             {
@@ -478,7 +479,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                     ParameterInfo[] parameters = constructor.GetParameters();
                     if (parameters.Length == 0)
                     {
-                        return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, constructor);
+                        return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, constructor, doNotDispose);
                     }
 
                     parameterCallSites = CreateArgumentCallSites(
@@ -486,9 +487,10 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                         implementationType,
                         callSiteChain,
                         parameters,
-                        throwIfCallSiteNotFound: true)!;
+                        throwIfCallSiteNotFound: true,
+                        doNotDispose: doNotDispose)!;
 
-                    return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, constructor, parameterCallSites);
+                    return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, constructor, parameterCallSites, doNotDispose);
                 }
 
                 Array.Sort(constructors,
@@ -505,7 +507,8 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                         implementationType,
                         callSiteChain,
                         parameters,
-                        throwIfCallSiteNotFound: false);
+                        throwIfCallSiteNotFound: false,
+                        doNotDispose: doNotDispose);
 
                     if (currentParameterCallSites != null)
                     {
@@ -552,7 +555,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                 else
                 {
                     Debug.Assert(parameterCallSites != null);
-                    return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, bestConstructor, parameterCallSites);
+                    return new ConstructorCallSite(lifetime, serviceIdentifier.ServiceType, bestConstructor, parameterCallSites, doNotDispose);
                 }
             }
             finally
@@ -567,7 +570,8 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
             Type implementationType,
             CallSiteChain callSiteChain,
             ParameterInfo[] parameters,
-            bool throwIfCallSiteNotFound)
+            bool throwIfCallSiteNotFound,
+            bool doNotDispose)
         {
             var parameterCallSites = new ServiceCallSite[parameters.Length];
 
@@ -585,7 +589,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                         {
                             throw new InvalidOperationException(SR.InvalidServiceKeyType);
                         }
-                        callSite = new ConstantCallSite(parameterType, serviceIdentifier.ServiceKey);
+                        callSite = new ConstantCallSite(parameterType, serviceIdentifier.ServiceKey, doNotDispose);
                         break;
                     }
                     if (attribute is FromKeyedServicesAttribute keyed)
@@ -604,7 +608,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
 
                 if (callSite == null && ParameterDefaultValue.TryGetDefaultValue(parameters[index], out object? defaultValue))
                 {
-                    callSite = new ConstantCallSite(parameterType, defaultValue);
+                    callSite = new ConstantCallSite(parameterType, defaultValue, doNotDispose);
                 }
 
                 if (callSite == null)

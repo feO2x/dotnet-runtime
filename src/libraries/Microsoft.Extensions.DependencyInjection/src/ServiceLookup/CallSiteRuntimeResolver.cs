@@ -35,7 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
 
         protected override object? VisitDisposeCache(ServiceCallSite transientCallSite, RuntimeResolverContext context)
         {
-            return context.Scope.CaptureDisposable(VisitCallSiteMain(transientCallSite, context));
+            return context.Scope.CaptureDisposable(VisitCallSiteMain(transientCallSite, context), transientCallSite.CaptureDisposable);
         }
 
         protected override object VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
@@ -94,7 +94,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                     Scope = serviceProviderEngine,
                     AcquiredLocks = context.AcquiredLocks | lockType
                 });
-                serviceProviderEngine.CaptureDisposable(resolved);
+                serviceProviderEngine.CaptureDisposable(resolved, callSite.CaptureDisposable);
                 callSite.Value = resolved;
                 return resolved;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.Extensions.DependencyInjection.ServiceLookup
                     Scope = serviceProviderEngine,
                     AcquiredLocks = context.AcquiredLocks | lockType
                 });
-                serviceProviderEngine.CaptureDisposable(resolved);
+                serviceProviderEngine.CaptureDisposable(resolved, callSite.CaptureDisposable);
                 resolvedServices.Add(callSite.Cache.Key, resolved);
                 return resolved;
             }
